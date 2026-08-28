@@ -1,4 +1,4 @@
-# Portfolio de Análisis de Datos — Tomás Gálvez Vera
+# Portfolio de Análisis de Datos — Tomás Galvez Vera
 
 Proyectos de análisis de datos aplicados a problemáticas reales, desarrollados con foco en construir dashboards claros para stakeholders no técnicos.
 
