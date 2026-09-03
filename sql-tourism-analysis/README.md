@@ -10,7 +10,7 @@ Los CAT son puntos de información turística ubicados en distintos barrios de C
 
 🧱 Diagrama Entidad-Relación
 
-   screenshots/diagrama-er.png
+  sql-tourism-analysis/   screenshots/diagrama-er.png
 
 El modelo relaciona 5 tablas con una jerarquía territorial:
 
