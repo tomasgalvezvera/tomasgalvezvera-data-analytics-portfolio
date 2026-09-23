@@ -1,18 +1,41 @@
-# Portfolio de Análisis de Datos — Tomás Galvez Vera
+# Análisis CAT Buenos Aires (Python)
 
-Proyectos de análisis de datos aplicados a problemáticas reales, desarrollados con foco en construir dashboards claros para stakeholders no técnicos.
+Análisis exploratorio y limpieza de datos de la **Encuesta a Centros de Atención Turística (CAT)** de la Ciudad de Buenos Aires, correspondiente al período 2017-2018.
 
-## 📊 Proyecto 1: Prestigio Internacional vs. Datos Reales (Turismo CABA)
-Comparación entre el posicionamiento internacional de Buenos Aires (Premios Wanderlust 2025) y la demanda real registrada en los Centros de Atención Turística (CAT) durante 2016-2019 (341.700 registros).
+Este proyecto aborda el mismo dataset que [`sql-cat-buenos-aires`](../sql-cat-buenos-aires), pero con un enfoque distinto: en vez de SQL/MySQL Workbench, acá se trabaja con **Python y pandas**, orientado a procesos de limpieza y transformación de datos.
 
-- **Herramientas:** Google Looker Studio, Excel
-- **Fuente de datos:** Datos abiertos GCBA
-- **Hallazgo clave:** las consultas logísticas (mapas, transporte) superan ampliamente a las culturales, pese al prestigio internacional de la ciudad
-- 🔗 [Dashboard interactivo][   🔗 [Dashboard interactivo](https://datastudio.google.com/reporting/7210dc12-294b-4bff-aedd-70c684c9fb97)]
-- 🔗 [Publicación en LinkedIn](https://www.linkedin.com/posts/tomasggalvezvera_prestigio-internacional-vs-datos-reales-ugcPost-7482594738542632960-fFCJ/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAsr-SwB9ahJsFNiIXacLnccXPhFPLmDaH0)]
+## Fuente de datos
 
+- Dataset: [Resultado de encuestas en Centros de Atención Turística (CAT)](https://data.buenosaires.gob.ar/sl/dataset/encuesta-centros-atencion-turistica-cat/resource/juqdkmgo-942-resource) — GCBA (Gobierno de la Ciudad de Buenos Aires)
+- Última actualización del dataset: 18/06/2026
+- Fecha de descarga: 18/09/2026
 
-- **Fuente de datos:** [Encuesta CAT — Datos Abiertos GCBA - Utilizando AÑOS 2016/2019](https://data.buenosaires.gob.ar/dataset/encuesta-centros-atencion-turistica-cat)
+## Herramientas
 
-## 🛠️ Stack técnico
-SQL · Excel Avanzado · ETL · Power BI · Google Looker Studio · Python (nivel introductorio)
+- Python 3
+- pandas
+
+## ¿Qué hace el script?
+
+1. **Carga** del dataset (`resultado-de-encuestas-2017-2018.csv`).
+2. **Análisis descriptivo inicial**: dimensiones, columnas, tipos de datos, frecuencia de valores por CAT y por barrio.
+3. **Chequeo de duplicados**.
+4. **Selección y renombre de columnas** relevantes para el análisis.
+5. **Unificación de país de residencia**, combinando tres columnas originales (`pais_extranjero`, `otro_pais_extranjero`, `provincia_argentina`) en una sola columna `pais`, con una jerarquía de reglas de prioridad.
+6. **Clasificación de tipo de visitante** (Argentina / Extranjero / Sin dato) a partir de la columna `pais`.
+7. **Exportación** del dataset limpio (`cat_buenos_aires_limpio.csv`).
+
+## Cómo correrlo
+
+```bash
+pip install pandas
+python analisis_cat.py
+```
+
+> Nota: el archivo CSV original no está incluido en este repositorio. Podés descargarlo desde el [link oficial](https://data.buenosaires.gob.ar/sl/dataset/encuesta-centros-atencion-turistica-cat/resource/juqdkmgo-942-resource) y colocarlo en esta misma carpeta antes de ejecutar el script.
+
+## Próximos pasos
+
+- Visualización de la distribución geográfica y por tipo de visitante.
+- Análisis temporal (por fecha/temporada).
+- Cruce entre barrio y punto CAT.
