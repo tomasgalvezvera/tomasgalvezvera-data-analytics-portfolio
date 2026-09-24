@@ -24,6 +24,6 @@ Un pilar fundamental de este proyecto fue auditar y solucionar las inconsistenci
 
 ## 🧱 Modelo Relacional (Diagrama ER)
 
-El modelo en SQL normaliza la información en 5 tablas estructuradas con jerarquía territorial[sql-tourism-analysis/   screenshots/diagrama-er.png]:
+El modelo en SQL normaliza la información en 5 tablas estructuradas con jerarquía territorial // [Diagrama Entidad Relación](sql-tourism-analysis/screenshots/diagrama-er.png)
 
 
