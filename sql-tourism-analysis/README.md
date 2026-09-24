@@ -1,53 +1,29 @@
-🗺️ Análisis de Turismo en CABA: Centros de Atención al Turista (CAT)
+# 🗺️ Análisis de Atención Turística en CABA: Modelo Relacional, Data Hygiene & Business Insights
 
-Proyecto de SQL enfocado en analizar el comportamiento de visitantes en los Centros de Atención al Turista (CAT) de la Ciudad de Buenos Aires, basado en el dataset público del Gobierno de la Ciudad:
+Proyecto de análisis de datos enfocado en el comportamiento de visitantes en los **Centros de Atención al Turista (CAT)** de la Ciudad de Buenos Aires, basado en el dataset oficial del Gobierno de la Ciudad (174.812 registros / 360.209 pasajeros)[cite: 3, 4].
 
-🔗 data.buenosaires.gob.ar - Encuesta CAT
+🔗 **Fuente de datos:** [data.buenosaires.gob.ar - Encuestas CAT](https://data.buenosaires.gob.ar)
 
-📌 Contexto
+---
 
-Los CAT son puntos de información turística ubicados en distintos barrios de CABA (Puerto Madero, Retiro, Florida, Recoleta, etc.) donde se registran visitas de turistas nacionales y extranjeros. Este proyecto analiza esos registros para responder preguntas de negocio típicas de un análisis de turismo urbano.
+## 📌 Contexto & Problema 
 
-🧱 Diagrama Entidad-Relación
+Buenos Aires cuenta con una destacada proyección turística internacional[cite: 1]. Este módulo analiza la demanda presencial real en los nodos de atención física (Puerto Madero, Retiro, Florida, Recoleta, etc.) para determinar las necesidades operativas de la red, evaluando si el flujo responde a consultas logísticas o culturales y cómo se distribuye entre visitantes **Nacionales e Internacionales**[cite: 1, 4].
 
-  sql-tourism-analysis/   screenshots/diagrama-er.png
+---
 
-El modelo relaciona 5 tablas con una jerarquía territorial:
+## 🧹 Calidad de Datos & Limpieza (Data Hygiene)
 
-paises
-   │
-   └──> visitas <──── cat <──── barrios <──── comunas
-paises: país de origen del turista
-comunas: división administrativa de CABA
-barrios: barrios de la ciudad, asociados a una comuna
-cat: Centros de Atención al Turista, ubicados en un barrio
-visitas: registro de pasajeros por fecha, CAT, barrio, comuna y país
-❓ Preguntas que responde el análisis
-¿Qué centro de atención turística recibe más visitantes?
-¿Qué barrios y comunas concentran mayor afluencia?
-¿De qué países vienen los turistas que visitan cada centro?
-¿Cómo varía el turismo a lo largo del año (estacionalidad)?
-¿Qué centros son más estables y cuáles más estacionales?
-🗂️ Estructura del proyecto
-├── schema_y_datos_reales.sql   → Creación de tablas + carga de datos reales
-├── queries.sql                 → Consultas de análisis, comentadas
-├── trabajo_practico_sql.sql    → Ejercicios progresivos (SELECT → CASE)
-├── screenshots/                → Diagrama ER y capturas de resultados
-└── README.md                   → Este archivo
-🛠️ Técnicas de SQL utilizadas
-JOIN entre múltiples tablas relacionadas
-GROUP BY y funciones de agregación (SUM, AVG, COUNT, MAX, MIN)
-HAVING para filtrar sobre resultados agrupados
-Subqueries (cálculo de porcentaje sobre el total)
-CTEs (Common Table Expressions) con WITH
-Window functions (ROW_NUMBER() OVER PARTITION BY) para rankear dentro de cada grupo
-CASE para categorizar registros según reglas de negocio
-💡 Hallazgos principales
-CAT Florida concentra la mayor cantidad de pasajeros registrados, siendo el punto de mayor tránsito turístico del dataset.
-Se observa estacionalidad en la demanda a lo largo del año.
-El análisis por país permite identificar los principales orígenes de los turistas que consultan en cada centro.
-🚀 Cómo ejecutarlo
-Ejecutar schema_y_datos_reales.sql en MySQL Workbench (o cualquier motor MySQL) para crear la base y cargar los datos reales.
-Ejecutar las consultas de queries.sql o trabajo_practico_sql.sql una por una para explorar cada análisis.
+Un pilar fundamental de este proyecto fue auditar y solucionar las inconsistencias presentes en la base de datos pública:
 
-Proyecto desarrollado como parte de mi portfolio de Data Analytics, con foco en modelado relacional y consultas SQL orientadas a negocio.
+* **Unificación de procedencia:** Se resolvió la fragmentación del origen del turista (distribuido originalmente en campos de país extranjero, campo libre y provincia argentina) para construir una dimensión limpia de países[cite: 4].
+* **Auditoría territorial (SQL):** Se identificaron y aislaron anomalías de registro, como visitas asignadas a la *Comuna 4* sin un punto CAT físico correspondiente en la tabla de infraestructura[cite: 3].
+* **Depuración sintáctica:** Normalización de nombres de países duplicados por diferencias de tipeo o variantes regionales (ej. *Finlandia*, *Holanda* vs. *Países Bajos*)[cite: 3].
+
+---
+
+## 🧱 Modelo Relacional (Diagrama ER)
+
+El modelo en SQL normaliza la información en 5 tablas estructuradas con jerarquía territorial[cite: 7]:
+
+
