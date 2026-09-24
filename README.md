@@ -1,4 +1,4 @@
-# Portfolio de Análisis de Datos — Tomás Galvez Vera 🧹🎯📊🌍❓
+# Portfolio de Análisis de Datos — Tomás Galvez Vera 🎯📊🌍
 
 # 🏙️ Turismo CABA: Prestigio Internacional vs. Demanda Operativa Real
 
