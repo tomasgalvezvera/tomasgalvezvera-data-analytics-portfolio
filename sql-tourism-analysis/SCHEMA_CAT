@@ -1,0 +1,209 @@
+-- SCHEMA: Centro de Atención Turística (CAT) - GCBA
+
+-- Base de datos para análisis de visitas turísticas
+-- Crear tablas en orden: comunas → barrios → cat → paises → visitas
+
+-- =====================================================
+-- TABLA: COMUNAS
+-- =====================================================
+CREATE TABLE comunas (
+    id_comuna INT PRIMARY KEY,
+    comuna VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================================================
+-- TABLA: BARRIOS
+-- =====================================================
+CREATE TABLE barrios (
+    id_barrio INT PRIMARY KEY,
+    barrio VARCHAR(100) NOT NULL,
+    id_comuna INT NOT NULL,
+    codigo VARCHAR(5),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_comuna) REFERENCES comunas(id_comuna) ON DELETE RESTRICT,
+    INDEX idx_id_comuna (id_comuna)
+);
+
+-- =====================================================
+-- TABLA: CAT (Centros de Atención Turística)
+-- =====================================================
+CREATE TABLE cat (
+    id_cat INT PRIMARY KEY,
+    cat VARCHAR(100) NOT NULL UNIQUE,
+    id_barrio INT NOT NULL,
+    direccion VARCHAR(200),
+    telefono VARCHAR(20),
+    horario VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_barrio) REFERENCES barrios(id_barrio) ON DELETE RESTRICT,
+    INDEX idx_id_barrio (id_barrio)
+);
+
+-- =====================================================
+-- TABLA: PAISES
+-- =====================================================
+CREATE TABLE paises (
+    id_pais INT PRIMARY KEY,
+    pais VARCHAR(100) NOT NULL UNIQUE,
+    codigo_iso CHAR(2),
+    region VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================================================
+-- TABLA: VISITAS (Tabla Central - Hechos)
+-- =====================================================
+CREATE TABLE visitas (
+    id_visita INT PRIMARY KEY AUTO_INCREMENT,
+    id_cat INT NOT NULL,
+    id_pais INT NOT NULL,
+    id_comuna INT NOT NULL,
+    pasajeros INT NOT NULL DEFAULT 0,
+    fecha_visita DATETIME,
+    consulta_realizada VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_cat) REFERENCES cat(id_cat) ON DELETE RESTRICT,
+    FOREIGN KEY (id_pais) REFERENCES paises(id_pais) ON DELETE RESTRICT,
+    FOREIGN KEY (id_comuna) REFERENCES comunas(id_comuna) ON DELETE RESTRICT,
+    INDEX idx_id_cat (id_cat),
+    INDEX idx_id_pais (id_pais),
+    INDEX idx_id_comuna (id_comuna),
+    INDEX idx_fecha_visita (fecha_visita)
+);
+
+-- =====================================================
+-- ÍNDICES ADICIONALES PARA OPTIMIZACIÓN
+-- =====================================================
+CREATE INDEX idx_cat_barrio ON cat(id_barrio);
+CREATE INDEX idx_visitas_cat_pais ON visitas(id_cat, id_pais);
+CREATE INDEX idx_visitas_comuna_pais ON visitas(id_comuna, id_pais);
+
+-- =====================================================
+-- VISTAS ÚTILES (OPCIONAL)
+-- =====================================================
+
+-- Vista: Resumen por País
+CREATE VIEW vw_resumen_paises AS
+SELECT 
+    p.id_pais,
+    p.pais,
+    COUNT(v.id_visita) AS cantidad_visitas,
+    SUM(v.pasajeros) AS total_pasajeros,
+    ROUND(AVG(v.pasajeros), 2) AS promedio_pasajeros,
+    MIN(v.pasajeros) AS min_pasajeros,
+    MAX(v.pasajeros) AS max_pasajeros
+FROM paises p
+LEFT JOIN visitas v ON p.id_pais = v.id_pais
+GROUP BY p.id_pais, p.pais
+ORDER BY cantidad_visitas DESC;
+
+-- Vista: Resumen por CAT
+CREATE VIEW vw_resumen_cat AS
+SELECT 
+    c.id_cat,
+    c.cat,
+    b.barrio,
+    co.comuna,
+    COUNT(v.id_visita) AS cantidad_visitas,
+    SUM(v.pasajeros) AS total_pasajeros,
+    ROUND(AVG(v.pasajeros), 2) AS promedio_pasajeros
+FROM cat c
+LEFT JOIN barrios b ON c.id_barrio = b.id_barrio
+LEFT JOIN comunas co ON b.id_comuna = co.id_comuna
+LEFT JOIN visitas v ON c.id_cat = v.id_cat
+GROUP BY c.id_cat, c.cat, b.barrio, co.comuna
+ORDER BY cantidad_visitas DESC;
+
+-- Vista: Resumen por Comuna
+CREATE VIEW vw_resumen_comunas AS
+SELECT 
+    co.id_comuna,
+    co.comuna,
+    COUNT(v.id_visita) AS cantidad_visitas,
+    SUM(v.pasajeros) AS total_pasajeros,
+    ROUND(AVG(v.pasajeros), 2) AS promedio_pasajeros,
+    COUNT(DISTINCT c.id_cat) AS cantidad_cat
+FROM comunas co
+LEFT JOIN visitas v ON co.id_comuna = v.id_comuna
+LEFT JOIN cat c ON v.id_cat = c.id_cat
+GROUP BY co.id_comuna, co.comuna
+ORDER BY cantidad_visitas DESC;
+
+-- =====================================================
+-- DATOS DE EJEMPLO (OPCIONAL - comentado)
+-- =====================================================
+-- Descomenta estas líneas si quieres cargar datos de prueba
+
+/*
+-- Comunas de GCBA (15 comunas)
+INSERT INTO comunas (id_comuna, comuna) VALUES
+(1, 'Comuna 1 - Centro'),
+(2, 'Comuna 2 - San Nicolás'),
+(3, 'Comuna 3 - San Telmo'),
+(4, 'Comuna 4 - La Boca'),
+(5, 'Comuna 5 - Almagro'),
+(6, 'Comuna 6 - Caballito'),
+(7, 'Comuna 7 - Flores'),
+(8, 'Comuna 8 - Villa Soldati'),
+(9, 'Comuna 9 - Liniers'),
+(10, 'Comuna 10 - Villa Mitre'),
+(11, 'Comuna 11 - Villa General Mitre'),
+(12, 'Comuna 12 - Colegiales'),
+(13, 'Comuna 13 - Palermo'),
+(14, 'Comuna 14 - Palermo Hollywood'),
+(15, 'Comuna 15 - Chacarita');
+
+-- Barrios de ejemplo
+INSERT INTO barrios (id_barrio, barrio, id_comuna, codigo) VALUES
+(1, 'Monserrat', 1, 'MON'),
+(2, 'San Telmo', 3, 'STE'),
+(3, 'La Boca', 4, 'LAB'),
+(4, 'Almagro', 5, 'ALM'),
+(5, 'Caballito', 6, 'CAB'),
+(6, 'Flores', 7, 'FLO'),
+(7, 'Villa Crespo', 5, 'VIC'),
+(8, 'Saavedra', 12, 'SAA'),
+(9, 'Palermo', 13, 'PAL'),
+(10, 'Belgrano', 13, 'BEL');
+
+-- CAT de ejemplo
+INSERT INTO cat (id_cat, cat, id_barrio, direccion, telefono) VALUES
+(1, 'CAT Florida', 1, 'Calle Florida 123', '4321-1234'),
+(2, 'CAT San Telmo', 2, 'Av. Defensa 456', '4343-5678'),
+(3, 'CAT La Boca', 3, 'Av. Almirante Brown 789', '4363-9012'),
+(4, 'CAT Centro', 1, 'Av. Corrientes 1000', '5555-0000'),
+(5, 'CAT Caballito', 5, 'Av. Acoyte 2000', '4866-1111'),
+(6, 'CAT Flores', 6, 'Av. Rivadavia 3000', '4633-2222'),
+(7, 'CAT Palermo', 9, 'Av. Santa Fe 4000', '4771-3333'),
+(8, 'CAT Belgrano', 10, 'Av. Juramento 5000', '4782-4444');
+
+-- Países de ejemplo
+INSERT INTO paises (id_pais, pais, codigo_iso, region) VALUES
+(1, 'Argentina', 'AR', 'América del Sur'),
+(2, 'Brasil', 'BR', 'América del Sur'),
+(3, 'Chile', 'CL', 'América del Sur'),
+(4, 'Uruguay', 'UY', 'América del Sur'),
+(5, 'España', 'ES', 'Europa'),
+(6, 'Francia', 'FR', 'Europa'),
+(7, 'Italia', 'IT', 'Europa'),
+(8, 'Alemania', 'DE', 'Europa'),
+(9, 'Estados Unidos', 'US', 'América del Norte'),
+(10, 'México', 'MX', 'América del Norte');
+
+-- Visitas de ejemplo (comentadas por ser muchas)
+-- INSERT INTO visitas (id_cat, id_pais, id_comuna, pasajeros, fecha_visita) VALUES
+-- (1, 1, 1, 2, '2026-09-20 10:30:00'),
+-- (1, 2, 1, 3, '2026-09-20 11:15:00'),
+-- ...
+*/
+
+-- =====================================================
+-- VERIFICACIÓN: Mostrar estructura
+-- =====================================================
+SHOW TABLES;
+DESCRIBE comunas;
+DESCRIBE barrios;
+DESCRIBE cat;
+DESCRIBE paises;
+DESCRIBE visitas;
