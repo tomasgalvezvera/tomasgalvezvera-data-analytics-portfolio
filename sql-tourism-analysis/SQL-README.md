@@ -6,7 +6,7 @@ Proyecto de análisis de datos enfocado en el comportamiento de visitantes en lo
 
 ---
 
-## 📌 Contexto & Problema 
+## 📌 Contexto & Problema 📌
 
 Buenos Aires cuenta con una destacada proyección turística internacional[cite: 1]. Este módulo analiza la demanda presencial real en los nodos de atención física (Puerto Madero, Retiro, Florida, Recoleta, etc.) para determinar las necesidades operativas de la red, evaluando si el flujo responde a consultas logísticas o culturales y cómo se distribuye entre visitantes **Nacionales e Internacionales**[cite: 1, 4].
 
