@@ -1,4 +1,4 @@
--- SCHEMA: Centro de Atención Turística (CAT) - GCBA
+📌 SCHEMA: Centro de Atención Turística (CAT) - GCBA
 
 -- Base de datos para análisis de visitas turísticas
 -- Crear tablas en orden: comunas → barrios → cat → paises → visitas
